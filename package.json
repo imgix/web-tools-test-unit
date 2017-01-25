@@ -1,0 +1,41 @@
+{
+  "name": "web-tools-test-unit",
+  "version": "0.1.0",
+  "description": "Web-tools task for running Jasmine unit tests with Karma",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/imgix/web-tools-test-unit"
+  },
+  "author": "imgix",
+  "license": "BSD",
+  "main": "tools/task.test-unit.js",
+  "dependencies": {
+    "gulp-util": "3.0.7",
+    "jasmine": "2.4.1",
+    "jasmine-core": "2.4.1",
+    "jasmine-terminal-reporter": "1.0.1",
+    "karma": "=0.13.15",
+    "karma-chrome-launcher": "0.2.2",
+    "karma-firefox-launcher": "0.1.7",
+    "karma-jasmine": "0.3.7",
+    "karma-jasmine-matchers": "2.0.1",
+    "karma-phantomjs-launcher": "1.0.0",
+    "karma-safari-launcher": "0.1.1",
+    "lodash": "4.6.1",
+    "main-bower-files": "2.11.1",
+    "merge2": "1.0.1",
+    "phantomjs-prebuilt": "2.1.7",
+    "run-sequence": "1.1.5",
+    "through2": "2.0.1"
+  },
+  "devDependencies": {
+    "gulp": "3.9.1",
+    "gulp-jscs": "3.0.2",
+    "gulp-jshint": "2.0.0",
+    "gulp-util": "3.0.7",
+    "jshint": "2.9.1",
+    "lodash": "4.6.1",
+    "reporter-plus": "git://github.com/jayeb/reporter-plus.git",
+    "yargs": "4.2.0"
+  }
+}
