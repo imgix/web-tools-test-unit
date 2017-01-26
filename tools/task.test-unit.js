@@ -1,7 +1,7 @@
 var _ = require('lodash'),
     merge = require('merge2'),
     argFilter = require('web-tools/tools/misc/arg-filter'),
-    unitTestPipeline = require('./test-unit.js');
+    unitTestPipeline = require('./pipeline.test-unit.js');
 
 module.exports = function setUpTask(gulp) {
   var testConfig = _.get(gulp, 'webToolsConfig.unitTests'),
