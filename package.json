@@ -1,6 +1,6 @@
 {
   "name": "web-tools-test-unit",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Web-tools task for running Jasmine unit tests with Karma",
   "repository": {
     "type": "git",
