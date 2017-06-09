@@ -22,6 +22,7 @@ module.exports = function setUpTask(gulp) {
     var bowerFiles,
         bowerStream,
         assetStreams,
+        helperStream,
         testStream,
         allStreams;
 
@@ -41,12 +42,15 @@ module.exports = function setUpTask(gulp) {
       return gulp.streamCache.get(name);
     });
 
+    helperStream = gulp.src(testConfig.testHelpers, {read: false});
+
     testStream = gulp.src(testConfig.testSrc, {read: false})
       .pipe(argFilter());
 
     allStreams = merge.apply(null, _.flatten([
       bowerStream,
       assetStreams,
+      helperStream,
       testStream
     ]));
 
