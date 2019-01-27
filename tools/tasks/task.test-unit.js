@@ -1,6 +1,5 @@
 var _ = require('lodash'),
     merge = require('merge2'),
-    mainBowerFiles = require('main-bower-files'),
     argFilter = require('web-tools/tools/misc/arg-filter.js'),
     unitTestPipeline = require('./pipeline.test-unit.js');
 
@@ -19,24 +18,21 @@ module.exports = function setUpTask(gulp) {
   });
 
   gulp.task('test-unit', taskDependencies, function task() {
-    var bowerFiles,
-        bowerStream,
+    var extFiles,
+        extStream,
         assetStreams,
         helperStream,
         testStream,
-        allStreams;
+        allStreams,
+        testPipeline;
 
     // Get Bower dev dependencies as well, since they can include test bootstraps
-    bowerFiles = mainBowerFiles({
+    extFiles = gulp.getExt({
       includeDev: true,
-      paths: {
-          bowerJson: _.get(gulp, 'webToolsConfig.bower.json'),
-          bowerDirectory: _.get(gulp, 'webToolsConfig.bower.components')
-        },
       filter: '**/*.js'
     });
 
-    bowerStream = gulp.src(bowerFiles, {read: false});
+    extStream = gulp.src(extFiles, {read: false});
 
     assetStreams = _.map(assetDependencies, function getStream(name) {
       return gulp.streamCache.get(name);
@@ -48,13 +44,15 @@ module.exports = function setUpTask(gulp) {
       .pipe(argFilter());
 
     allStreams = merge.apply(null, _.flatten([
-      bowerStream,
+      extStream,
       assetStreams,
       helperStream,
       testStream
     ]));
 
-    return allStreams.pipe(unitTestPipeline(testConfig.karmaOptions));
+    testPipeline = gulp.pipelineCache.get('test-unit');
+
+    return allStreams.pipe(testPipeline(testConfig.karmaOptions));
   }, {
     description: 'Run unit tests with Karma.',
     category: 'test',
