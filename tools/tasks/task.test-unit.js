@@ -1,7 +1,9 @@
 var _ = require('lodash'),
+    args = require('yargs').argv,
+    combine = require('stream-combiner'),
+    filter = require('gulp-filter')
     merge = require('merge2'),
-    argFilter = require('web-tools/tools/misc/arg-filter.js'),
-    unitTestPipeline = require('./pipeline.test-unit.js');
+    unitTestPipeline = require('../pipelines/pipeline.test-unit.js');
 
 module.exports = function setUpTask(gulp) {
   var testConfig = _.get(gulp, 'webToolsConfig.unitTests'),
@@ -22,6 +24,7 @@ module.exports = function setUpTask(gulp) {
         extStream,
         assetStreams,
         helperStream,
+        filterRegexen,
         testStream,
         allStreams,
         testPipeline;
@@ -40,8 +43,19 @@ module.exports = function setUpTask(gulp) {
 
     helperStream = gulp.src(testConfig.testHelpers, {read: false});
 
-    testStream = gulp.src(testConfig.testSrc, {read: false})
-      .pipe(argFilter());
+    testStream = gulp.src(testConfig.testSrc, {read: false});
+
+    if (!!args.match) {
+      filterRegexen = _.map(args.match.split(','), function makeRegex(match) {
+        return new RegExp(match.replace('/', '\\/'), 'i');
+      });
+
+      testStream = testStream.pipe(filter(function filterFiles(file) {
+        return _.some(filterRegexen, function testFileWithRegex(regex) {
+          return regex.test(file.path);
+        });
+      }));
+    }
 
     allStreams = merge.apply(null, _.flatten([
       extStream,
