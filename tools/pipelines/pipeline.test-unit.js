@@ -20,11 +20,13 @@ module.exports = function setupTestUnitPipeline(gulp) {
       autoWatch: false,
       singleRun: true,
       frameworks: [
+          'parallel',
           'jasmine',
           'jasmine-matchers'
         ],
       plugins: [
           // We have to require() these because otherwise Karma will look in the wrong place
+          require('karma-parallel'),
           require('karma-jasmine'),
           require('karma-jasmine-matchers'),
           require('karma-chrome-launcher'),
