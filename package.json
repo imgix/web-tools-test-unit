@@ -10,7 +10,6 @@
   "license": "BSD",
   "main": "tools/web-tools-test-unit.js",
   "dependencies": {
-    "gulp-filter": "6.0.0",
     "gulp-util": "3.0.7",
     "jasmine": "3.4.0",
     "jasmine-core": "3.4.0",
@@ -24,7 +23,6 @@
     "lodash": "4.6.1",
     "merge2": "1.0.1",
     "puppeteer": "1.19.0",
-    "stream-combiner": "0.2.2",
     "through2": "2.0.1",
     "yargs": "13.3.0"
   }
