@@ -1,7 +1,6 @@
 var _ = require('lodash'),
     args = require('yargs').argv,
     combine = require('stream-combiner'),
-    filter = require('gulp-filter')
     merge = require('merge2'),
     through = require('through2'),
     unitTestPipeline = require('../pipelines/pipeline.test-unit.js');
