@@ -3,6 +3,7 @@ var _ = require('lodash'),
     combine = require('stream-combiner'),
     filter = require('gulp-filter')
     merge = require('merge2'),
+    through = require('through2'),
     unitTestPipeline = require('../pipelines/pipeline.test-unit.js');
 
 module.exports = function setUpTask(gulp) {
@@ -24,8 +25,9 @@ module.exports = function setUpTask(gulp) {
         extStream,
         assetStreams,
         helperStream,
-        filterRegexen,
         testStream,
+        regexMatchers,
+        filterTestFiles,
         allStreams,
         testPipeline;
 
@@ -45,23 +47,38 @@ module.exports = function setUpTask(gulp) {
 
     testStream = gulp.src(testConfig.testSrc, {read: false});
 
-    if (!!args.match) {
-      filterRegexen = _.map(args.match.split(','), function makeRegex(match) {
-        return new RegExp(match.replace('/', '\\/'), 'i');
-      });
+    regexMatchers = _.chain(args)
+      .get('match', '')
+      .split(',')
+      .map(function makeRegex(match) {
+          return new RegExp(match.replace('/', '\\/'), 'i');
+        })
+      .value();
 
-      testStream = testStream.pipe(filter(function filterFiles(file) {
-        return _.some(filterRegexen, function testFileWithRegex(regex) {
-          return regex.test(file.path);
-        });
-      }));
-    }
+    // Filter and label test files
+    filterTestFiles = through.obj(
+      function transform(chunk, encoding, callback) {
+          var matchesFilter = _.some(regexMatchers, function testFileWithRegex(regex) {
+            return regex.test(chunk.path);
+          });
+
+          if (matchesFilter || !regexMatchers.length) {
+            this.push(chunk);
+            chunk.isTestFile = true;
+          }
+
+          callback();
+        },
+      function flush(done) {
+          done();
+        }
+    );
 
     allStreams = merge.apply(null, _.flatten([
       extStream,
       assetStreams,
       helperStream,
-      testStream
+      testStream.pipe(filterTestFiles)
     ]));
 
     testPipeline = gulp.pipelineCache.get('test-unit');
