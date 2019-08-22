@@ -2,13 +2,17 @@ var path = require('path'),
     _ = require('lodash'),
     through = require('through2'),
     gutil = require('gulp-util'),
-    KarmaServer = require('karma').Server;
+    KarmaServer = require('karma').Server,
+    PARALLEL_THRESHOLD;
+
+PARALLEL_THRESHOLD = 5;
 
 process.env.CHROME_BIN = require('puppeteer').executablePath();
 
 module.exports = function setupTestUnitPipeline(gulp) {
   return function testUnitPipeline(options) {
-    var karmaFiles = [];
+    var karmaFiles = [],
+        testFileCount = 0;
 
     options = _.defaultsDeep({}, options, {
       // Honestly, these are the only three options you should care about
@@ -38,6 +42,11 @@ module.exports = function setupTestUnitPipeline(gulp) {
       function transform(chunk, encoding, callback) {
           this.push(chunk);
           karmaFiles.push(chunk.path);
+
+          if (chunk.isTestFile) {
+            testFileCount++;
+          }
+
           callback();
         },
       function flush(done) {
@@ -45,6 +54,12 @@ module.exports = function setupTestUnitPipeline(gulp) {
               karmaOptions = _.merge({}, options, {
                   files: karmaFiles
                 });
+
+          if (testFileCount >= PARALLEL_THRESHOLD) {
+            _.set(karmaOptions, 'parallelOptions.executors', 7);
+          } else {
+            _.set(karmaOptions, 'parallelOptions.executors', 1);
+          }
 
           new KarmaServer(karmaOptions, function onFinish(exitCode) {
             if (exitCode !== 0) {
