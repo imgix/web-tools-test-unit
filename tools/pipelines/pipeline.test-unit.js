@@ -54,10 +54,10 @@ module.exports = function setupTestUnitPipeline(gulp) {
                   files: karmaFiles
                 });
 
-          if (testFileCount < options.parallelization.maxParallel) {
+          if (testFileCount < options.maxParallel) {
             _.set(karmaOptions, 'parallelOptions.executors', testFileCount);
           } else {
-            _.set(karmaOptions, 'parallelOptions.executors', options.parallelization.maxParallel);
+            _.set(karmaOptions, 'parallelOptions.executors', options.maxParallel);
           }
 
           new KarmaServer(karmaOptions, function onFinish(exitCode) {
