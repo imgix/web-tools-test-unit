@@ -2,10 +2,7 @@ var path = require('path'),
     _ = require('lodash'),
     through = require('through2'),
     gutil = require('gulp-util'),
-    KarmaServer = require('karma').Server,
-    PARALLEL_THRESHOLD;
-
-PARALLEL_THRESHOLD = 5;
+    KarmaServer = require('karma').Server;
 
 process.env.CHROME_BIN = require('puppeteer').executablePath();
 
@@ -20,6 +17,8 @@ module.exports = function setupTestUnitPipeline(gulp) {
       reporters: ['progress'],
       browsers: ['ChromeHeadless'],
       captureTimeout: 20 * 1000,
+
+      maxParallel: 7,
 
       autoWatch: false,
       singleRun: true,
@@ -55,10 +54,10 @@ module.exports = function setupTestUnitPipeline(gulp) {
                   files: karmaFiles
                 });
 
-          if (testFileCount >= PARALLEL_THRESHOLD) {
-            _.set(karmaOptions, 'parallelOptions.executors', 7);
+          if (testFileCount < options.parallelization.maxParallel) {
+            _.set(karmaOptions, 'parallelOptions.executors', testFileCount);
           } else {
-            _.set(karmaOptions, 'parallelOptions.executors', 1);
+            _.set(karmaOptions, 'parallelOptions.executors', options.parallelization.maxParallel);
           }
 
           new KarmaServer(karmaOptions, function onFinish(exitCode) {
